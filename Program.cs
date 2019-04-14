@@ -20,6 +20,7 @@ namespace HPP_NC
                 Console.WriteLine(String.Join("|", args));
                 string pathfinderDir = "", exeDir = "";
                 bool spitOutHacknetOnly = false;
+                bool developFeatures = false;
                 int index = 0;
 
                 char separator = Path.DirectorySeparatorChar;
@@ -36,6 +37,12 @@ namespace HPP_NC
                     index++;
                 }
 
+                Console.WriteLine("Is your Pathfinder(.dll) the [D]evelop branch or [M]aster / stable? (D/M)");
+
+                // ask if user is using develop or master / stable
+                if (Console.ReadKey(true).Key == ConsoleKey.D)
+                    developFeatures = true;
+                
                 if (File.Exists(exeDir + "Hacknet"))
                 {
                     var txt = File.ReadAllText(exeDir + "Hacknet");
@@ -458,10 +465,12 @@ namespace HPP_NC
                     flags: InjectFlags.PassInvokingInstance
                 );
 
-                /*ad.MainModule.GetType("Hacknet.OS").GetMethod("Draw").InjectWith(
-                    hooks.GetMethod("onOSDraw"),
-                    flags: InjectFlags.PassInvokingInstance | InjectFlags.PassParametersRef | InjectFlags.ModifyReturn
-                );*/
+                if (developFeatures) {
+                    ad.MainModule.GetType("Hacknet.OS").GetMethod("Draw").InjectWith(
+                        hooks.GetMethod("onOSDraw"),
+                        flags: InjectFlags.PassInvokingInstance | InjectFlags.PassParametersRef | InjectFlags.ModifyReturn
+                    );
+                }
 
                 ad?.Write("HacknetPathfinder.exe");
             }
