@@ -7,7 +7,7 @@ using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Inject;
 
-namespace PathfinderPatcher
+namespace HPP_NC
 {
     // This will be the modloader.
     public static class PatcherProgram
@@ -32,6 +32,7 @@ namespace PathfinderPatcher
                         exeDir = args[index + 1] + separator;
                     if (arg.Equals("-spit")) // spit modifications without injected code
                         spitOutHacknetOnly = true;
+
                     index++;
                 }
 
