@@ -45,16 +45,19 @@ namespace HPP_NC
                 
                 if (File.Exists(exeDir + "Hacknet"))
                 {
+                    File.Copy(exeDir + "Hacknet", exeDir + "HacknetPathfinder", true);
+
                     var txt = File.ReadAllText(exeDir + "Hacknet");
                     txt = txt.Replace("Hacknet", "HacknetPathfinder");
+
                     File.WriteAllText(exeDir + "HacknetPathfinder", txt);
                 }
 
                 foreach (var n in new string[]{ exeDir + "Hacknet.bin.x86", exeDir + "Hacknet.bin.x86_64", exeDir + "Hacknet.bin.osx" }) {
                     if (File.Exists(n)) {
-                        string file = Path.GetFileNameWithoutExtension(n);
+                        string ext = Path.GetExtension(n);
 
-                        File.Copy(n, n.Replace(file, "HacknetPathfinder"), true);
+                        File.Copy(n, exeDir + "HacknetPathfinder" + ext, true);
                     }
                 }
 
@@ -470,6 +473,29 @@ namespace HPP_NC
                         hooks.GetMethod("onOSDraw"),
                         flags: InjectFlags.PassInvokingInstance | InjectFlags.PassParametersRef | InjectFlags.ModifyReturn
                     );
+
+                    ad.MainModule.GetType("Hacknet.RunnableConditionalActions").GetMethod("Deserialize").InjectWith(
+                        hooks.GetMethod("onDeserializeRunnableConditionalActions"),
+                        flags: InjectFlags.PassParametersRef | InjectFlags.ModifyReturn
+                    );
+
+                    // SENSITIVE CODE, CHANGE OFFSET IF NEEDED
+                    // Hook onAddSerializableConditions to SerializableCondition.Deserialize
+                    /*ad.MainModule.GetType("Hacknet.SerializableCondition").GetMethod("Deserialize").InjectWith(
+                        hooks.GetMethod("onAddSerializableConditions"),
+                        3,
+                        flags: InjectFlags.PassLocals,
+                        localsID:new int[]{ 0 }
+                    );
+
+                    // SENSITIVE CODE, CHANGE OFFSET IF NEEDED
+                    // Hook onAddSerializableConditions to SerializableCondition.Deserialize
+                    ad.MainModule.GetType("Hacknet.SerializableAction").GetMethod("Deserialize").InjectWith(
+                        hooks.GetMethod("onAddSerializableActions"),
+                        3,
+                        flags: InjectFlags.PassLocals,
+                        localsID: new int[] { 0 }
+                    );*/
                 }
 
                 ad?.Write("HacknetPathfinder.exe");
